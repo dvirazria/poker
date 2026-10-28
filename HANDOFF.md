@@ -490,8 +490,8 @@ existing friend or group-mate, while a friend-invite token remains secret by des
 
 ## Current release snapshot
 
-- Git remote: `https://github.com/dvirazaria1/poker.git`. Vercel project `poker` (team
-  `dvirazaria1-3527s-projects`) deploys every push to `main` — if a push does not deploy, first check
+- Git remote: `https://github.com/dvirazria/poker.git`. Vercel project `poker` (team
+  `dvirazrias-projects`) deploys every push to `main` — if a push does not deploy, first check
   that Settings → Git still shows the repo connected (it silently dropped once, 2026-09-12 → 10-05).
 - Release builder version: `100` (October 2026); the service-worker cache is `kupa-v100`.
 - Tests: ~750 across `tests/*.test.cjs` (`node --test tests/*.test.cjs`).
