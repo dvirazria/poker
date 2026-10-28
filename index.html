@@ -2116,6 +2116,7 @@
         <div class="set-group">
           <a class="set-row set-row-link" href="./privacy.html" target="_blank" rel="noopener">מדיניות פרטיות</a>
           <a class="set-row set-row-link" href="./terms.html" target="_blank" rel="noopener">תנאי שימוש</a>
+          <a class="set-row set-row-link" href="./support.html" target="_blank" rel="noopener">תמיכה ויצירת קשר</a>
         </div>
       </section>
 
@@ -2140,7 +2141,7 @@
       </section>
 
       <button type="button" class="btn-quiet set-signout-btn" id="setSwapBtn">התנתקות</button>
-      <p class="set-version">גרסה 153</p>
+      <p class="set-version">גרסה 154</p>
     </div>
   </section><!-- /#settings -->
 
@@ -2280,6 +2281,41 @@
   let deleteAccountCompletionTimer = null;
   let loginNote = "";                    // shown once on the next showLogin() (e.g. after deletion), then cleared
 
+  // ---------- iOS app (the Capacitor shell in ios-app/ serves this page from capacitor://) ----------
+  // Everything here is a no-op on the website.
+  const IN_IOS_APP = typeof location !== "undefined" && location.protocol === "capacitor:";
+  // A native plugin the app bundles (ios-app/package.json), or null on the web.
+  function nativePlugin(name) {
+    const cap = IN_IOS_APP ? window.Capacitor : null;
+    return cap && cap.Plugins && typeof cap.isPluginAvailable === "function" && cap.isPluginAvailable(name)
+      ? cap.Plugins[name] : null;
+  }
+  // The clock and battery follow the app's own theme, not the phone's: light text over the dark
+  // theme, dark text over the light one (DARK/LIGHT name the background, as Capacitor does).
+  function syncStatusBar() {
+    const bar = nativePlugin("StatusBar");
+    if (bar) bar.setStyle({ style: document.documentElement.dataset.theme === "light" ? "LIGHT" : "DARK" }).catch(() => {});
+  }
+  // A short tap of feedback: an iPhone ignores navigator.vibrate, so the app uses real haptics.
+  // "light" = a buy-in, "medium" = a committed hold, "success" = a table closed.
+  function haptic(kind) {
+    const h = nativePlugin("Haptics");
+    if (h) {
+      (kind === "success" ? h.notification({ type: "SUCCESS" })
+        : h.impact({ style: kind === "medium" ? "MEDIUM" : "LIGHT" })).catch(() => {});
+      return;
+    }
+    try { if (kind === "light" && navigator.vibrate) navigator.vibrate(20); } catch (e) {}
+  }
+  // A new-window link to a bundled page goes nowhere in the app: Capacitor hands it to the system,
+  // which cannot open capacitor://. The legal and support pages open from the website, in Safari.
+  if (IN_IOS_APP) document.addEventListener("click", (e) => {
+    const a = e.target && e.target.closest ? e.target.closest('a[href$="privacy.html"], a[href$="terms.html"], a[href$="support.html"]') : null;
+    if (!a) return;
+    e.preventDefault();
+    window.open(PUBLIC_APP_ORIGIN + "/" + a.getAttribute("href").replace(/^\.\//, ""), "_blank");
+  }, true);
+
   // ---------- theme (default: dark), floating sun/moon toggle ----------
   const SUN_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"></circle><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5 5l1.8 1.8M17.2 17.2 19 19M19 5l-1.8 1.8M6.8 17.2 5 19"></path></svg>';
   const MOON_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 13.5A8 8 0 0 1 10.5 4a8 8 0 1 0 9.5 9.5Z"></path></svg>';
@@ -2290,6 +2326,7 @@
     const isLight = document.documentElement.dataset.theme === "light";
     // show the appView you'll switch TO: moon while in light appView, sun while in dark
     document.getElementById("themeIcon").innerHTML = isLight ? MOON_SVG : SUN_SVG;
+    syncStatusBar();
   }
   document.getElementById("themeBtn").addEventListener("click", () => toggleTheme());
   renderThemeIcon();
@@ -6773,7 +6810,7 @@
       const from = sum(player.buyins);
       addEntry(player, amount);
       save();
-      try { if (navigator.vibrate) navigator.vibrate(20); } catch (e) {}
+      haptic("light");
       render();
       const nidx = players.indexOf(player);
       const fresh = document.querySelectorAll(".prow")[nidx];
@@ -10080,6 +10117,7 @@
         finishGameCompletionTimer = null;
         btn.classList.remove("hold-state");
         if (hint) hint.hidden = true;
+        haptic("medium"); // the hold committed
         finishGame();
       }, 60);
     }, FINISH_GAME_HOLD_MS);
@@ -10199,6 +10237,7 @@
     const closedGroup = closedGroupId && state.groups.find(g => g.id === closedGroupId && !g.deletedAt);
     if (closedGroup) openGroup(closedGroupId, "details");
     else setAppView("games");
+    haptic("success");
     if (balanced) confetti();
   }
 
@@ -10556,9 +10595,8 @@
     document.getElementById("authLocal").classList.toggle("auth-local-only", !supabase);
     // Google refuses OAuth inside an embedded web view, so the iOS app shell (capacitor://) offers
     // the email code only -- which also keeps App Review's Sign in with Apple rule out of play.
-    const inIosShell = location.protocol === "capacitor:";
-    document.getElementById("authGoogleBtn").hidden = inIosShell;
-    document.querySelector("#authBlock .auth-divider").hidden = inIosShell;
+    document.getElementById("authGoogleBtn").hidden = IN_IOS_APP;
+    document.querySelector("#authBlock .auth-divider").hidden = IN_IOS_APP;
     // With an account route on offer the name form waits behind "המשך בלי חשבון"; without one it
     // is the only route, so it shows straight away.
     const localOpen = !supabase || loginLocalOpen;
@@ -10610,6 +10648,15 @@
       return;
     }
     setAuthError("authEmailError", "");
+    // App Review cannot read an emailed code, so one fixed review address signs in with a password
+    // typed into the same code field (the review notes carry it). Nothing is emailed for it.
+    if (email.toLowerCase() === REVIEW_EMAIL) {
+      authEmailPending = REVIEW_EMAIL;
+      document.getElementById("authCode").value = "";
+      setAuthStep("code");
+      document.getElementById("authCode").focus();
+      return;
+    }
     setAuthBusy("authEmailBtn", true, "שולח…", "שלחו לי קוד");
     try {
       const { error } = await supabase.auth.signInWithOtp({ email, options: { shouldCreateUser: true } });
@@ -10627,6 +10674,7 @@
 
   async function resendEmailCode() {
     if (!supabase || !authEmailPending || authResendBusy) return;
+    if (authEmailPending === REVIEW_EMAIL) return; // nothing was emailed for the review account
     authResendBusy = true; // one request at a time: a double tap must not burn the project's email quota
     document.getElementById("authResendBtn").disabled = true;
     setAuthError("authCodeError", "");
@@ -10646,6 +10694,9 @@
   // is 8: auto-verify waits for exactly that many digits. A manual "אישור" accepts 6-10, so a
   // later change of that setting degrades to one extra tap instead of an unusable login.
   const AUTH_CODE_LENGTH = 8;
+  // The App Review account (see sendEmailCode). Its password is 8 digits, so the code field's
+  // auto-verify signs it in like any code; it lives only in App Store Connect, never in this repo.
+  const REVIEW_EMAIL = "appreview@dvirazria.co.il";
   async function verifyEmailCode() {
     if (!supabase) return;
     const input = document.getElementById("authCode");
@@ -10659,7 +10710,9 @@
     setAuthError("authCodeError", "");
     setAuthBusy("authCodeBtn", true, "בודק…", "אישור");
     try {
-      const { error } = await supabase.auth.verifyOtp({ email: authEmailPending, token, type: "email" });
+      const { error } = authEmailPending === REVIEW_EMAIL
+        ? await supabase.auth.signInWithPassword({ email: REVIEW_EMAIL, password: token })
+        : await supabase.auth.verifyOtp({ email: authEmailPending, token, type: "email" });
       if (error) throw error;
       authEmailPending = "";
       clearResendCountdown();
@@ -12495,7 +12548,9 @@
   function refreshPushRow() {
     const row = document.getElementById("setPush");
     if (!row) return;
-    row.hidden = !cloudMode();
+    // Web push does not exist inside the iOS app (only Safari and home-screen web apps have it);
+    // the app's own notifications would come through Apple's push service instead.
+    row.hidden = !cloudMode() || IN_IOS_APP;
     if (row.hidden) return;
     const note = document.getElementById("setPushNote");
     const btn = document.getElementById("setPushBtn");
