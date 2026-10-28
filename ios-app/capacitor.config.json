@@ -5,6 +5,12 @@
   "backgroundColor": "#05070A",
   "ios": {
     "contentInset": "never",
-    "backgroundColor": "#05070A"
+    "backgroundColor": "#05070A",
+    "allowsLinkPreview": false
+  },
+  "plugins": {
+    "StatusBar": {
+      "style": "DARK"
+    }
   }
 }

@@ -72,12 +72,12 @@
   </header>
 
   <h1>מדיניות פרטיות</h1>
-  <p class="updated">עודכן לאחרונה: 09.09.2026</p>
+  <p class="updated">עודכן לאחרונה: 28.10.2026</p>
 
   <p>"סוגרים קופה" היא אפליקציה לניהול וסגירת משחקי פוקר קאש ביתיים בין חברים. המסמך הזה מסביר איזה מידע נשמר, איפה, מי יכול לראות אותו, ומה אנחנו לא עושים איתו — בקצרה ובכנות.</p>
 
   <h2>איך נכנסים</h2>
-  <p>יש שתי דרכי כניסה עם חשבון:</p>
+  <p>יש שתי דרכי כניסה עם חשבון (באפליקציית האייפון — קוד במייל בלבד):</p>
   <ul>
     <li><strong>התחברות עם Google.</strong> אנחנו מקבלים מגוגל את השם, כתובת המייל ומזהה חשבון Google שלך. הסיסמה של Google לא עוברת אלינו בשום שלב — אנחנו לא רואים אותה ולא שומרים אותה.</li>
     <li><strong>קוד חד-פעמי במייל.</strong> מזינים כתובת מייל ומאמתים קוד שנשלח אליה. גם כאן אין סיסמה; הקוד לשימוש בודד ופג תוקף.</li>
@@ -88,6 +88,7 @@
   <p>כשאתה משתמש באפליקציה אנחנו שומרים:</p>
   <ul>
     <li>שם התצוגה שלך.</li>
+    <li>תמונת הפרופיל שלך, אם בחרת להוסיף אחת — תמונה שהעלית, או צורה או קלפים שבחרת במקומה. היא מוצגת ליד השם שלך באפליקציה, ואפשר להחליף אותה בכל רגע; מחיקת החשבון מוחקת גם אותה.</li>
     <li>הקבוצות שאתה חבר בהן, והחברות שלך בהן (תפקיד וסטטוס).</li>
     <li>משחקים שאתה משתתף בהם: כניסות (buy-ins), פדיון (cash-out) ותוצאה.</li>
     <li>העברות הסיום — מי משלם למי וכמה — וסטטוס התשלום שלהן.</li>
@@ -100,7 +101,7 @@
   <h2>איפה המידע נשמר</h2>
   <p>המידע נשמר בשני מקומות:</p>
   <ul>
-    <li>בדפדפן שלך, על המכשיר שלך בלבד (<code>localStorage</code>), תחת מפתחות ששמם מתחיל ב-<code>poker-settle-</code>. זה קיים תמיד, גם בלי חשבון.</li>
+    <li>בדפדפן או באפליקציה, על המכשיר שלך בלבד (<code>localStorage</code>), תחת מפתחות ששמם מתחיל ב-<code>poker-settle-</code>. זה קיים תמיד, גם בלי חשבון.</li>
     <li>אם התחברת עם חשבון — גם במסד נתונים Postgres המנוהל בידי Supabase, על שרתים בפרנקפורט, גרמניה (האיחוד האירופי). הגישה מוגבלת בכללי הרשאה ברמת שורה (Row-Level Security): כל משתמש מגיע רק לנתונים שלו ולנתוני הקבוצות שהוא חבר בהן — לא לנתונים של אחרים.</li>
   </ul>
 
@@ -125,13 +126,13 @@
   <p>אם נעדכן את המדיניות הזו נעדכן את התאריך שבראש העמוד. המשך שימוש באפליקציה אחרי עדכון מהווה הסכמה לנוסח המעודכן.</p>
 
   <h2>יצירת קשר</h2>
-  <p>שאלות, בקשות מחיקה, או כל דבר אחר בנושא פרטיות — <a href="mailto:dvirazaria1@gmail.com">dvirazaria1@gmail.com</a>.</p>
+  <p>שאלות, בקשות מחיקה, או כל דבר אחר בנושא פרטיות — <a href="mailto:dvirazria1@gmail.com">dvirazria1@gmail.com</a>.</p>
 
   <hr class="sep">
 
   <div class="en">
     <h2>English summary</h2>
-    <p>"Sogrim Kupa" is a Hebrew home-game poker settlement app. Sign-in is via Google OAuth or a one-time emailed code — we never see or store a password. When you use the app we keep: your display name, the groups you belong to, games with buy-ins and cash-outs, the resulting settlement transfers, debts between players, friend relationships, and invite tokens; guests are name-only records other users create for people without an account. Data lives in your browser's localStorage (<code>poker-settle-*</code> keys) and, if you sign in, in a Supabase Postgres database hosted in Frankfurt, Germany (EU), protected by row-level security so each person can reach only their own data and their groups'. Inside one game, participants can see each other's buy-ins, cash-outs and that game's result — needed to settle who pays whom — but a group's cumulative leaderboard money and any debt are visible only to the people they belong to. There are no analytics, no ads, no tracking, and we never sell data; the only other parties involved are the hosting providers (Vercel, Supabase) and Google sign-in. The app itself never moves money — it is a private record between friends. To delete your account, use the "מחיקת חשבון" (delete account) control in the app's settings, under "אזור מסוכן" — it permanently deletes your account, name, email and profile and signs you out; games and records already shared with other players are kept exactly as they are, just no longer linked to you (your name shows there as a deleted user). If you cannot access the app, contact dvirazaria1@gmail.com instead.</p>
+    <p>"Sogrim Kupa" is a Hebrew home-game poker settlement app. Sign-in is via Google OAuth or a one-time emailed code (the iPhone app offers the emailed code only) — we never see or store a password. When you use the app we keep: your display name, your profile picture if you add one (a photo you upload, or a suit or cards you pick instead), the groups you belong to, games with buy-ins and cash-outs, the resulting settlement transfers, debts between players, friend relationships, and invite tokens; guests are name-only records other users create for people without an account. Data lives in your browser's or the app's local storage (<code>poker-settle-*</code> keys) and, if you sign in, in a Supabase Postgres database hosted in Frankfurt, Germany (EU), protected by row-level security so each person can reach only their own data and their groups'. Inside one game, participants can see each other's buy-ins, cash-outs and that game's result — needed to settle who pays whom — but a group's cumulative leaderboard money and any debt are visible only to the people they belong to. There are no analytics, no ads, no tracking, and we never sell data; the only other parties involved are the hosting providers (Vercel, Supabase) and Google sign-in. The app itself never moves money — it is a private record between friends. To delete your account, use the "מחיקת חשבון" (delete account) control in the app's settings, under "אזור מסוכן" — it permanently deletes your account, name, email and profile and signs you out; games and records already shared with other players are kept exactly as they are, just no longer linked to you (your name shows there as a deleted user). If you cannot access the app, contact dvirazria1@gmail.com instead.</p>
   </div>
 
   <footer>
